@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Favorite Song</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0e0c14;
+      --surface: #17141f;
+      --accent: #c084fc;
+      --accent2: #818cf8;
+      --text: #f1f0f5;
+      --muted: #9ca3af;
+      --glow: rgba(192, 132, 252, 0.25);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .notes-layer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .note {
+      position: absolute;
+      bottom: -60px;
+      font-size: 1.8rem;
+      opacity: 0;
+      animation: floatNote linear infinite;
+      color: var(--accent);
+      filter: drop-shadow(0 0 8px var(--accent));
+    }
+
+    @keyframes floatNote {
+      0%   { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 52px;
+      animation: fadeSlideDown 0.9s ease both;
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      line-height: 1.15;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(192,132,252,0.15);
+      border-radius: 18px;
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+      animation: fadeSlideUp 0.8s ease both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1) { animation-delay: 0.10s; }
+    .card:nth-child(2) { animation-delay: 0.25s; }
+    .card:nth-child(3) { animation-delay: 0.40s; }
+
+    .card-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(192,132,252,0.2);
+    }
+
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 60px var(--glow);
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    .css-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .css-chip {
+      background: rgba(192,132,252,0.07);
+      border: 1px solid rgba(192,132,252,0.2);
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.85rem;
+    }
+
+    .css-chip .chip-label {
+      display: block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: 5px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .anim-stage {
+      background: rgba(0,0,0,0.3);
+      border: 1px dashed rgba(192,132,252,0.25);
+      border-radius: 12px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .bouncer {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 24px var(--glow);
+      position: absolute;
+      animation: bounceBall 1.4s ease-in-out infinite;
+    }
+
+    @keyframes bounceBall {
+      0%, 100% { transform: translateY(50px) scaleX(1.1) scaleY(0.9); }
+      50%       { transform: translateY(-50px) scaleX(0.9) scaleY(1.1); }
+    }
+
+    @keyframes spinBall {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseBall {
+      0%, 100% { transform: scale(0.7); opacity: 0.5; box-shadow: 0 0 10px rgba(192,132,252,0.3); }
+      50%       { transform: scale(1.3); opacity: 1;   box-shadow: 0 0 40px rgba(192,132,252,0.8); }
+    }
+
+    .anim-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      padding: 9px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(192,132,252,0.4);
+      background: rgba(192,132,252,0.1);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: rgba(192,132,252,0.25);
+      border-color: var(--accent);
+      box-shadow: 0 0 14px var(--glow);
+      transform: translateY(-1px);
+    }
+
+    button.active {
+      background: var(--accent);
+      color: #0e0c14;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 48px;
+      letter-spacing: 0.05em;
+      animation: fadeSlideUp 0.8s ease 0.6s both;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div class="notes-layer" id="notes-layer"></div>
+
+<div class="page">
+
+  <header>
+    <p class="eyebrow">Visual Studio Project</p>
+    <h1>My Favorite Song</h1>
+    <p class="subtitle">HTML &middot; CSS &middot; JavaScript &mdash; all in one page</p>
+  </header>
+
+  <!-- a. Embedded YouTube Video -->
+  <div class="card">
+    <p class="card-label">a &nbsp; Embedded Music Video</p>
+    <div class="video-wrap">
+      <iframe
+        src="https://www.youtube.com/embed/IxXO2ybSvfg"
+        title="My Favorite Song"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- b. CSS Customizations -->
+  <div class="card">
+    <p class="card-label">b &nbsp; CSS Customizations</p>
+    <div class="css-demo">
+      <div class="css-chip">
+        <span class="chip-label">Font Family</span>
+        Playfair Display &amp; DM Sans
+      </div>
+      <div class="css-chip">
+        <span class="chip-label">Background Color</span>
+        <span class="swatch" style="background:#0e0c14;"></span>#0e0c14 Deep Space
+      </div>
+      <div class="css-chip">
+        <span class="chip-label">Accent Color</span>
+        <span class="swatch" style="background:#c084fc;"></span>#c084fc Violet
+      </div>
+      <div class="css-chip">
+        <span class="chip-label">Card Style</span>
+        18px radius &amp; purple glow
+      </div>
+    </div>
+  </div>
+
+  <!-- c. JavaScript Animation -->
+  <div class="card">
+    <p class="card-label">c &nbsp; JavaScript Animation</p>
+    <div class="anim-stage">
+      <div class="bouncer" id="bouncer"></div>
+    </div>
+    <div class="anim-controls">
+      <button id="btn-bounce" class="active" onclick="setAnim('bounce')">Bounce</button>
+      <button id="btn-spin"   onclick="setAnim('spin')">Spin</button>
+      <button id="btn-pulse"  onclick="setAnim('pulse')">Pulse</button>
+      <button id="btn-stop"   onclick="setAnim('stop')">Stop</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>Built with HTML &middot; CSS &middot; JavaScript &nbsp;|&nbsp; Visual Studio Project</footer>
+
+<script>
+  /* STARFIELD */
+  const canvas = document.getElementById('stars-canvas');
+  const ctx    = canvas.getContext('2d');
+  let stars    = [];
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 160; i++) {
+      stars.push({
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.4 + 0.2,
+        alpha: Math.random(),
+        speed: Math.random() * 0.004 + 0.001
+      });
+    }
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(function(s) {
+      s.alpha += s.speed;
+      if (s.alpha > 1 || s.alpha < 0) s.speed *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(192, 132, 252, ' + (s.alpha * 0.7) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  resizeCanvas();
+  initStars();
+  drawStars();
+  window.addEventListener('resize', function() { resizeCanvas(); initStars(); });
+
+  /* FLOATING MUSIC NOTES */
+  var noteChars = ['♩', '♪', '♫', '♬', '𝄞'];
+  var layer     = document.getElementById('notes-layer');
+
+  function spawnNote() {
+    var el         = document.createElement('span');
+    el.className   = 'note';
+    el.textContent = noteChars[Math.floor(Math.random() * noteChars.length)];
+    el.style.left             = (Math.random() * 100) + 'vw';
+    var dur                   = 7 + Math.random() * 8;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay   = (Math.random() * 3) + 's';
+    el.style.fontSize         = (1.2 + Math.random() * 1.8) + 'rem';
+    layer.appendChild(el);
+    setTimeout(function() { el.remove(); }, (dur + 4) * 1000);
+  }
+
+  setInterval(spawnNote, 900);
+  for (var i = 0; i < 6; i++) { spawnNote(); }
+
+  /* BALL ANIMATION SWITCHER */
+  var animations = {
+    bounce: 'bounceBall 1.4s ease-in-out infinite',
+    spin:   'spinBall 1s linear infinite',
+    pulse:  'pulseBall 1.2s ease-in-out infinite',
+    stop:   'none'
+  };
+
+  function setAnim(type) {
+    var bouncer = document.getElementById('bouncer');
+    bouncer.style.animation = animations[type];
+    document.querySelectorAll('.anim-controls button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    var btn = document.getElementById('btn-' + type);
+    if (btn) { btn.classList.add('active'); }
+  }
+</script>
+
+</body>
+</html>
