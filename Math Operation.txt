@@ -1,0 +1,33 @@
+// MathOperations class contains a method that performs a math operation on two integers
+class MathOperations
+{
+    // Void method that takes two integers, performs a math operation on the first,
+    // and displays the second integer to the screen
+    public void Calculate(int firstNumber, int secondNumber)
+    {
+        // Perform a math operation on the first integer (multiply it by 2)
+        int result = firstNumber * 2;
+
+        // Display the result of the math operation on the first integer
+        Console.WriteLine("Math operation on first integer (" + firstNumber + " x 2): " + result);
+
+        // Display the second integer to the screen
+        Console.WriteLine("Second integer: " + secondNumber);
+    }
+}
+
+// Main console application entry point
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Step 2: Instantiate the MathOperations class
+        MathOperations math = new MathOperations();
+
+        // Step 3: Call the method passing in two numbers by position
+        math.Calculate(8, 15);
+
+        // Step 4: Call the method again, specifying the parameters by name
+        math.Calculate(firstNumber: 20, secondNumber: 35);
+    }
+}
